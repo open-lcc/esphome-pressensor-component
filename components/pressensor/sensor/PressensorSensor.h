@@ -17,13 +17,17 @@ namespace esphome {
                 : public esphome::Component, public esphome::Parented<Pressensor> {
         public:
             void setup() {
-                get_parent()->add_on_pressure_callback([this](int16_t msg) { this->handleMessage(msg); });
+                get_parent()->add_on_status_callback([this](PressensorStatus msg) { this->handleMessage(msg); });
             }
 
-            void handleMessage(int16_t pressureInMillibar) {
-                float pressureInPascal = pressureInMillibar * 100.f;
+            void handleMessage(PressensorStatus status) {
+                float pressureInPascal = status.pressureMbar * 100.f;
                 if (should_set(pressure_, pressureInPascal, 10000)) {
                     pressure_->publish_state(pressureInPascal);
+                }
+
+                if (should_set(battery_level_, status.batteryLevel, 1)) {
+                    battery_level_->publish_state(status.batteryLevel);
                 }
             }
 
@@ -33,9 +37,10 @@ namespace esphome {
             }
 
             void set_pressure(esphome::sensor::Sensor *sens) { pressure_ = sens; }
+            void set_battery_level(esphome::sensor::Sensor *sens) { battery_level_ = sens; }
         protected:
             esphome::sensor::Sensor *pressure_{nullptr};
-
+            esphome::sensor::Sensor *battery_level_{nullptr};
         };
     }
 }
