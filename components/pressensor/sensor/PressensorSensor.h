@@ -22,7 +22,7 @@ namespace esphome {
 
             void handleMessage(PressensorStatus status) {
                 float pressureInPascal = status.pressureMbar * 100.f;
-                if (should_set(pressure_, pressureInPascal, 10000)) {
+                if (should_set(pressure_, pressureInPascal, 1000)) {
                     pressure_->publish_state(pressureInPascal);
                 }
 
