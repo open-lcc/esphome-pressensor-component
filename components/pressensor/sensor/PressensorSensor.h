@@ -22,7 +22,7 @@ namespace esphome {
 
             void handleMessage(PressensorStatus status) {
                 float pressureInPascal = status.pressureMbar * 100.f;
-                if (should_set(pressure_, pressureInPascal, 1000)) {
+                if (should_set(pressure_, pressureInPascal, 10000)) {
                     pressure_->publish_state(pressureInPascal);
                 }
 
@@ -33,7 +33,7 @@ namespace esphome {
 
             bool should_set(esphome::sensor::Sensor *sensor, float value, float sigma = 0.1)
             {
-                return sensor != nullptr && (!sensor->has_state() || fabs(sensor->get_state() - value) >= sigma);
+                return sensor != nullptr && (!sensor->has_state() || fabs(sensor->get_raw_state() - value) >= sigma);
             }
 
             void set_pressure(esphome::sensor::Sensor *sens) { pressure_ = sens; }
